@@ -133,6 +133,39 @@ func NewSecretKey(pp *PublicParameters) *SecretKey {
 	return sk
 }
 
+// Unlink, ase_homosig_unlink
+func Unlink(pp *PublicParameters, pk *PublicKey, sk *SecretKey) (*PublicKey, *SecretKey) {
+	newPk := NewPublicKey(pp)
+	newSk := NewSecretKey(pp)
+
+	r := randomScalar()
+
+	newPk.g = new(bls.G1)
+	newPk.g.ScalarMult(r, pk.g)
+	newPk.gsig = new(bls.G1)
+	newPk.gsig.ScalarMult(r, pk.gsig)
+
+	newPk.h = new(bls.G1)
+	newPk.h.ScalarMult(r, pk.h)
+	newPk.hsig = new(bls.G1)
+	newPk.hsig.ScalarMult(r, pk.hsig)
+
+	newPk.u = new(bls.G1)
+	newPk.u.ScalarMult(r, pk.u)
+	newPk.usig = new(bls.G1)
+	newPk.usig.ScalarMult(r, pk.usig)
+
+	for i := 0; i < len(pk.es); i++ {
+		newPk.es[i] = new(bls.G1)
+		newPk.es[i].ScalarMult(r, pk.es[i])
+		newPk.esigs[i] = new(bls.G1)
+		newPk.es[i].ScalarMult(r, pk.esigs[i])
+		newSk.rs[i] = copyScalar(sk.rs[i])
+	}
+
+	return newPk, newSk
+}
+
 type ElhKeyPair struct {
 	SecretKey *bls.Scalar
 	PublicKey *bls.G2

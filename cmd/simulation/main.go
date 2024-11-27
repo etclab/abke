@@ -13,8 +13,11 @@ func main() {
 
 	attrs := []bool{true, false, false, true}
 	pk, sk := ca.GenCert(attrs)
-	mu.UNUSED(sk)
 
 	mpk := ca.MPK()
 	fmt.Printf("pk.Verify returned %v\n", pk.Verify(pp, mpk))
+
+	newPk, newSk := abke.Unlink(pp, pk, sk)
+	mu.UNUSED(newPk)
+	mu.UNUSED(newSk)
 }
