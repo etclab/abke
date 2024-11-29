@@ -1,6 +1,9 @@
 package abke
 
 import (
+	"fmt"
+	"strings"
+
 	bls "github.com/cloudflare/circl/ecc/bls12381"
 )
 
@@ -47,6 +50,7 @@ func (m *MasterKey) MSK() *MSK {
 	return msk
 }
 
+// also called MVK in the paper
 type MPK struct {
 	G  *bls.G2
 	H  *bls.G2
@@ -85,6 +89,17 @@ func NewPublicKey(pp *PublicParameters) *PublicKey {
 	pk.es = make([]*bls.G1, pp.NumAttrs)
 	pk.esigs = make([]*bls.G1, pp.NumAttrs)
 	return pk
+}
+
+func (pk *PublicKey) String() string {
+	sb := new(strings.Builder)
+	fmt.Fprintf(sb, "g: %v,\ngsig: %v,\n", pk.g, pk.gsig)
+	fmt.Fprintf(sb, "h: %v,\nhsig: %v,\n", pk.h, pk.hsig)
+	fmt.Fprintf(sb, "u: %v,\nusig: %v,\n", pk.u, pk.usig)
+	for i, e := range pk.es {
+		fmt.Fprintf(sb, "e[%d]: %v,\nesig[%d]: %v,\n", i, e, i, pk.esigs[i])
+	}
+	return sb.String()
 }
 
 // Vrfy, ase_homosig_vrfy
@@ -131,6 +146,14 @@ func NewSecretKey(pp *PublicParameters) *SecretKey {
 	sk := new(SecretKey)
 	sk.rs = make([]*bls.Scalar, pp.NumAttrs)
 	return sk
+}
+
+func (sk *SecretKey) String() string {
+	sb := new(strings.Builder)
+	for i, r := range sk.rs {
+		fmt.Fprintf(sb, "[%d] = %v\n", i, r)
+	}
+	return sb.String()
 }
 
 // Unlink, ase_homosig_unlink
