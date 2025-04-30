@@ -182,7 +182,7 @@ func Unlink(pp *PublicParameters, pk *PublicKey, sk *SecretKey) (*PublicKey, *Se
 		newPk.es[i] = new(bls.G1)
 		newPk.es[i].ScalarMult(r, pk.es[i])
 		newPk.esigs[i] = new(bls.G1)
-		newPk.es[i].ScalarMult(r, pk.esigs[i])
+		newPk.esigs[i].ScalarMult(r, pk.esigs[i])
 		newSk.rs[i] = copyScalar(sk.rs[i])
 	}
 
